@@ -1,27 +1,24 @@
+from flask import Flask, request, jsonify
 import pickle
+import numpy as np
+from inspect_sav import get_similar_articles
+app = Flask(__name__)
 
-# Replace 'your_model.sav' with the actual filename
-sav_file = "sav/cosine_sim_model.sav"
+# Load the similarity matrix
+with open("sav/cosine_sim_model.sav", "rb") as file:
+    similarity_matrix = pickle.load(file)
 
-# Load the .sav file
-with open(sav_file, "rb") as file:
-    model_data = pickle.load(file)
+@app.route("/recommend", methods=["GET"])
+def recommend():
+    content_id = request.args.get("content_id", type=int)
 
-# Print out the type of the loaded object
-print(f"Loaded object type: {type(model_data)}\n")
+    if content_id is None or content_id >= similarity_matrix.shape[0]:
+        return jsonify({"error": "Invalid content_id"}), 400
 
-# If it's a dictionary, print the keys
-if isinstance(model_data, dict):
-    print("Keys in the .sav file:")
-    for key in model_data.keys():
-        print(f" - {key}")
-    
-    # Print an example value for the first key
-    first_key = next(iter(model_data))
-    print(f"\nExample data for key '{first_key}':")
-    print(model_data[first_key])
+    # Get top recommendations
+    similar_articles = np.argsort(similarity_matrix[content_id])[::-1][1:6]
 
-# If it's a scikit-learn model or another object, print its attributes
-else:
-    print("Attributes of the loaded object:")
-    print(dir(model_data))
+    return jsonify({"recommendations": similar_articles.tolist()})
+
+if __name__ == "__main__":
+    app.run(debug=True)
