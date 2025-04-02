@@ -1,18 +1,41 @@
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Calculator() {
-    return(
+    const [inputValue, setInputValue] = useState('');
+    const navigate = useNavigate(); // React Router navigation
+
+    const handleRecommend = () => {
+        if (inputValue >= 1 && inputValue <= 200) {
+            navigate(`/results?contentId=${inputValue}`); // Navigate with query params
+        } else {
+            alert('Please enter a value between 1 and 200.');
+        }
+    };
+
+    return (
         <>
             <div className="input-group">
-            <select className="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-                <option selected>Pick a user...</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-            </select>
-            <button className="btn btn-outline-secondary" type="button">Recommend!</button>
+                <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Enter a value (1-200)"
+                    min="1"
+                    max="200"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                />
+                <button
+                    className="btn btn-outline-secondary"
+                    type="button"
+                    onClick={handleRecommend}
+                >
+                    Recommend!
+                </button>
             </div>
         </>
-    )
+    );
 }
+
 export default Calculator;

@@ -1,29 +1,59 @@
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
-function Calculator() {
-    return(
-        <>
-            <div className="input-group">
-            <table className="table table-striped">
+function Results() {
+    const [recommendations, setRecommendations] = useState<number[]>([]);
+    const location = useLocation();
+
+    // Extract contentId from query params
+    const searchParams = new URLSearchParams(location.search);
+    const contentId = searchParams.get('contentId') || 'defaultContentId'; // Replace 'defaultContentId' with a valid fallback if needed.
+
+    useEffect(() => {
+        if (!contentId) return;
+
+        const fetchRecommendations = async () => {
+            try {
+                console.log("Fetching recommendations for contentId:", contentId);
+                const response = await fetch(`http://127.0.0.1:5000/recommend?content_id=${contentId}`);
+                const data = await response.json();
+                console.log("API Response:", data);
+                if (!Array.isArray(data.recommendations)) {
+                    console.error("Invalid API response format. Expected an array of recommendations.");
+                    return;
+                }
+                // Ensure the response contains an array of IDs
+                setRecommendations(data.recommendations || []);
+            } catch (error) {
+                console.error("Error fetching recommendations:", error);
+            }
+        };
+
+        fetchRecommendations();
+    }, [contentId]);
+
+    return (
+        <div className="container mt-4">
+            <h1>News Recommendations</h1>
+            <h2>For Content ID: {contentId}</h2>
+            
+            <table className="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">Title1</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Total</th>
+                        <th>Recommended Article IDs</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Item 1</td>
-                        <td>$10</td>
-                        <td>2</td>
-                        <td>$20</td>
-                    </tr>
+                    {recommendations.map((id) => (
+                        <tr key={id}>
+                            <td>{id}</td>
+                        </tr>
+                    ))}
                 </tbody>
-                </table>
-            </div>
-        </>
-    )
+            </table>
+        </div>
+    );
 }
-export default Calculator;
+
+export default Results;
