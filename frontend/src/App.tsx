@@ -1,8 +1,8 @@
 import './App.css'
 import Homepage from './pages/Homepage'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import Results from './pages/Results'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import MainResults from './pages/mainResults'
 
 function App() {
 
@@ -11,7 +11,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/results" element={<Results />} />
+          <Route path="/mainResults" element={<MainResults />} />
         </Routes>
       </Router>
     </>

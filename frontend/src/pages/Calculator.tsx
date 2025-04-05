@@ -8,7 +8,7 @@ function Calculator() {
 
     const handleRecommend = () => {
         if (inputValue >= 1 && inputValue <= 200) {
-            navigate(`/results?contentId=${inputValue}`); // Navigate with query params
+            navigate(`/mainResults?contentId=${inputValue}`); // Navigate with query params
         } else {
             alert('Please enter a value between 1 and 200.');
         }
